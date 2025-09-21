@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+   tools{
+       maven 'maven3'  
+   }
+
+    stages {
+       
+        stage('git checkout') {
+            steps {
+                echo 'Cloning GIT HUB Repo '
+				git branch: 'main', url: 'https://github.com/devopstraininghub/mindcircuit15d.git'
+            }  
+        }
+		
+		
+	    stage('sonar scan') {
+            steps {
+                echo 'scanning project'
+                sh 'ls -ltrh'
+                
+                sh ''' mvn sonar:sonar \\
+                       -Dsonar.host.url=http://ec2-44-204-240-58.compute-1.amazonaws.com:9000/ \\
+                       -Dsonar.login=squ_6bccafef0c1b101215712b25c8067639c49ab6ce'''
+            }
+    	}
+		
+        stage('Build Artifact') {
+            steps {
+                echo 'Build Artifact'
+				sh 'mvn clean package'
+            }
+        }
+		}
+		}
